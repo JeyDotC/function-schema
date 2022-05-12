@@ -1,0 +1,23 @@
+{
+  "name": "function-schema",
+  "version": "0.0.1",
+  "description": "Define your function signature so it is type-checked!",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "type-check",
+    "function",
+    "signature"
+  ],
+  "author": "JeyDotC",
+  "license": "MIT",
+  "dependencies": {
+    "is": "^3.3.0"
+  },
+  "devDependencies": {
+    "jest": "^28.1.0"
+  }
+}
