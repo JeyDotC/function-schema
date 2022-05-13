@@ -25,7 +25,7 @@ console.log(myFunction.toString());
 
 myFunction('John', 117);
 
-console.log(myFunctionWithOptionalParameter(15, 12));
+console.log(myFunctionWithOptionalParameter('', 12));
 
 console.log(myFunctionWithOptionalParameter('Mileena'));
 
@@ -42,8 +42,6 @@ IReceiveObjectWithCertainStructure({
 });
 
 IReceiveObjectWithCertainStructure({
-  name: 'Katheryn',
-  age: 280,
 });
 
 IReceiveObjectWithCertainStructure({ name: 200, age: 300 });
