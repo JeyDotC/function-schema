@@ -25,7 +25,7 @@ console.log(myFunction.toString());
 
 myFunction('John', 117);
 
-console.log(myFunctionWithOptionalParameter('Troy', 12));
+console.log(myFunctionWithOptionalParameter(15, 12));
 
 console.log(myFunctionWithOptionalParameter('Mileena'));
 

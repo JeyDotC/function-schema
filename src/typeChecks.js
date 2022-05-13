@@ -57,6 +57,11 @@ const InstanceOfNumberCheck = new TypeCheck(
   ({ value }) => is.number(value)
 );
 
+const InstanceOfBooleanCheck = new TypeCheck(
+  'boolean',
+  ({ value }) => is.boolean(value)
+);
+
 export const Int = new TypeCheck(
   'int',
   ({ value }) => is.integer(value)
@@ -113,6 +118,9 @@ export function typeCheckFactory(spec) {
   }
   if (spec === Number) {
     return InstanceOfNumberCheck;
+  }
+  if(spec === Boolean){
+    return InstanceOfBooleanCheck;
   }
 
   return InstanceOf(spec);
