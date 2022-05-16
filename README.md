@@ -1,3 +1,11 @@
+Usage
+
+```javascript
+const myFunction = signature(...TypeChecks)(ReturnValueCheck)(functionDefinition);
+```
+
+Examples:
+
 Define your function signature
 
 ```javascript
@@ -186,3 +194,23 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 
 [1, '!', 3, 4].map(numbersToString); // TypeCheckError: Parameter 0 must be an instance of number, received string instead.
 ```
+
+All type checks so far
+
+| Type Check | Description | Usage |
+|------------|-------------|-------|
+| **Primitive types** | | |
+| String     | Check if the given value is a string. (Uses typeof value === 'string') | `const myFunction = signature(String)(String)(() => {})` |
+| Number     | Checks if the given value is a number. Numeric strings wont pass | `const myFunction = signature(Number)(Number)(() => {})` |
+| Boolean    | Checks if the given value is a boolean. Boolean strings wont pass | `const myFunction = signature(Boolean)(Boolean)(() => {})` |
+| Any        | Accepts any value | `const myFunction = signature(Any)(Any)(() => {})` |
+| Int        | Accept int numbers only | `const myFunction = signature(Int)(Int)(() => {})` |
+| Void       | Alias for Any, useful to give clarity on return types when no value is expected | `const myFunction = signature()(Void)(() => {})` |
+| **Smart checks** |||
+| Equality Check | If what you provide is a value (not a type or type check), the parameter/return value will be compared to the given value | `const myFunction = signature('Param 0 will be compared to this string')('Return value will be compared to this string')(() => {})` |
+| Type-Of Check | If what you provide is a type (function/class) that doesn't match with the above criteria, the value will be checked with `value instanceof Type` | `const myFunction = signature(MyCustomType)(SomeOtherCustomType)(() => {})` |
+| **Compound Checks** |||
+| Optional\<Type\> | Checks if the value is either of the given type, null or undefined | `const myFunction = signature(Optional(String))(Optional(Number))(() => {})` |
+| OneOf\<Type1, Type2, ...\> | Checks if the value is of one of the given types | `const myFunction = signature(OneOf(String, Number))(OneOf(Number, Boolean))(() => {})`  <br /> Or as an enum:<br /> `const myFunction = signature(OneOf('a', 'b'))(OneOf(0, 1))(() => {})` |
+| PromiseOf\<Type\> | Ensures the value is a promise, and once resolved, it checks the promise has returned the correct type | `const myFunction = signature()(PromiseOf(String))(() => {})` |
+| Struct | Checks if the value complies with the given structure. The object must at least have the same properties and each property should validate against its type, extra properties will be ignored. | `const myFunction = signature(Struct({ name: String, age: Int, status: OneOf('active', 'suspended') }))(Void)(() => {})` |

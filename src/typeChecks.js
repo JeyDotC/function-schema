@@ -1,10 +1,52 @@
 import is from "is";
 import { TypeCheck, TypeCheckError } from "./typeCheck.js";
 
+const InstanceOfStringCheck = new TypeCheck(
+  'string',
+  ({ value }) => typeof value === 'string'
+);
+
+const InstanceOfNumberCheck = new TypeCheck(
+  'number',
+  ({ value }) => is.number(value)
+);
+
+const InstanceOfBooleanCheck = new TypeCheck(
+  'boolean',
+  ({ value }) => is.boolean(value)
+);
+
+export const Int = new TypeCheck(
+  'int',
+  ({ value }) => is.integer(value)
+);
+
 export const Any = new TypeCheck("any", () => true);
 
 export const Void = Any;
 Void.name = 'void';
+
+function EqualityCheck(valueToCompare) {
+  let name = valueToCompare;
+  if (valueToCompare === null) {
+    name = 'null'
+  }
+  if (typeof valueToCompare === 'string') {
+    name = `'${valueToCompare}'`;
+  }
+  return new TypeCheck(
+    `${name}`,
+    ({ value }) => value === valueToCompare
+  );
+}
+
+function InstanceOf(Type) {
+  return new TypeCheck(
+    Type.name,
+    ({ value }) => value instanceof Type
+  );
+}
+
 
 export function Optional(Type) {
   return new TypeCheck(
@@ -40,33 +82,7 @@ export function PromiseOf(Type) {
     });
 }
 
-export function InstanceOf(Type) {
-  return new TypeCheck(
-    Type.name,
-    ({ value }) => value instanceof Type
-  );
-}
-
-const InstanceOfStringCheck = new TypeCheck(
-  'string',
-  ({ value }) => is.string(value)
-);
-
-const InstanceOfNumberCheck = new TypeCheck(
-  'number',
-  ({ value }) => is.number(value)
-);
-
-const InstanceOfBooleanCheck = new TypeCheck(
-  'boolean',
-  ({ value }) => is.boolean(value)
-);
-
-export const Int = new TypeCheck(
-  'int',
-  ({ value }) => is.integer(value)
-);
-
+// TODO: This is violating Liskov substitution principle!! I must create a TypeCheckSubclass for this.
 export function Struct(objectSpec) {
   const entries = Object.entries(objectSpec).map(([prop, type]) => [prop, typeCheckFactory(type)]);
   const structure = entries.map(([prop, typeCheck]) => `${prop}: ${typeCheck.name}`).join(',\n');
@@ -78,7 +94,7 @@ export function Struct(objectSpec) {
       index,
       kind
     }) => {
-      if(value === null || value === undefined){
+      if (value === null || value === undefined) {
         return false;
       }
       const validationResults = entries.map(
@@ -100,9 +116,9 @@ export function Struct(objectSpec) {
       }
 
       throw new TypeCheckError({
-        kind, 
-        index, 
-        expectedTypeName: `{\n${structure}\n}`,  
+        kind,
+        index,
+        expectedTypeName: `{\n${structure}\n}`,
         receivedTypeName: `object with these errors: \n - ${validationResults.join(',\n - ')}\n`
       })
     }
@@ -119,8 +135,11 @@ export function typeCheckFactory(spec) {
   if (spec === Number) {
     return InstanceOfNumberCheck;
   }
-  if(spec === Boolean){
+  if (spec === Boolean) {
     return InstanceOfBooleanCheck;
+  }
+  if (typeof spec !== 'function') {
+    return EqualityCheck(spec);
   }
 
   return InstanceOf(spec);
