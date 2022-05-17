@@ -1,5 +1,26 @@
 import is from "is";
-import { TypeCheck, TypeCheckError } from "./typeCheck.js";
+import { TypeCheck } from "./typeCheck.js";
+
+function guessTypeName(Type){
+  if (Type === null) {
+    return 'null';
+  }
+
+  if (Type === undefined) {
+    return 'undefined';
+  }
+
+  const name = Type.name;
+  if(name !== undefined){
+    return name;
+  }
+
+  if (typeof Type === 'string') {
+    return `'${Type}'`;
+  }
+  
+  return Type;
+}
 
 const InstanceOfStringCheck = new TypeCheck(
   'string',
@@ -42,7 +63,7 @@ function EqualityCheck(valueToCompare) {
 
 function InstanceOf(Type) {
   return new TypeCheck(
-    Type.name,
+    guessTypeName(Type),
     ({ value }) => value instanceof Type
   );
 }
@@ -50,22 +71,22 @@ function InstanceOf(Type) {
 
 export function Optional(Type) {
   return new TypeCheck(
-    `Optional<${Type.name}>`,
+    `Optional<${guessTypeName(Type)}>`,
     (entry) => (entry.value === undefined || entry.value === null || typeCheckFactory(Type).isValid(entry))
   );
 }
 
 export function OneOf(...types) {
-  const expectedTypeName = `OneOf<${types.map(t => t.name).join(', ')}>`;
+  const expectedTypeName = `OneOf<${types.map(guessTypeName).join(', ')}>`;
   return new TypeCheck(
     expectedTypeName,
-    (entry) => types.some((T) => typeCheckFactory(T).isValid(entry))
+    (entry) => types.some((T) => typeCheckFactory(T).isValid(entry).isValid)
   );
 }
 
 export function PromiseOf(Type) {
   return new TypeCheck(
-    `Promise<${Type.name}>`,
+    `Promise<${guessTypeName(Type)}>`,
     (entry) => {
       const isPromise = entry.value instanceof Promise;
       if (isPromise) {
@@ -111,16 +132,10 @@ export function Struct(objectSpec) {
           return undefined;
         }).filter(e => e !== undefined);
 
-      if (validationResults.length === 0) {
-        return true;
-      }
+      const isValid = validationResults.length === 0;
+      const receivedTypeName = `object with these errors: \n - ${validationResults.join(',\n - ')}\n`;
 
-      throw new TypeCheckError({
-        kind,
-        index,
-        expectedTypeName: `{\n${structure}\n}`,
-        receivedTypeName: `object with these errors: \n - ${validationResults.join(',\n - ')}\n`
-      })
+      return { isValid, receivedTypeName };
     }
   );
 }

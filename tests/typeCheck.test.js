@@ -10,10 +10,10 @@ describe(`${TypeCheck.name}.isValid`, () => {
     const typeCheck = new TypeCheck('boolean', implementation);
 
     // Act
-    const result = typeCheck.isValid({});
+    const { isValid } = typeCheck.isValid({});
 
     // Assert
-    expect(result).toBe(expectedResult);
+    expect(isValid).toBe(expectedResult);
   });
 });
 

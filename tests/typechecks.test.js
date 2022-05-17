@@ -18,22 +18,22 @@ const listOfAnyValues = [
 describe(`${Any.name}`, () => {
   it.each(listOfAnyValues)('Should accept any value', (value) => {
     // Act
-    const result = Any.isValid({
+    const { isValid } = Any.isValid({
       value
     });
     // Assert
-    expect(result).toBe(true);
+    expect(isValid).toBe(true);
   })
 });
 
 describe(`${Void.name} (Alias of Any)`, () => {
   it.each(listOfAnyValues)('Should accept any value', (value) => {
     // Act
-    const result = Void.isValid({
+    const { isValid } = Void.isValid({
       value
     });
     // Assert
-    expect(result).toBe(true);
+    expect(isValid).toBe(true);
   })
 });
 
@@ -66,12 +66,12 @@ describe(`${Optional.name}`, () => {
     const OptionalOf = Optional(Type);
 
     // Act
-    const result = OptionalOf.isValid({
+    const { isValid } = OptionalOf.isValid({
       value
     });
 
     // Assert
-    expect(result).toBe(expectedResult);
+    expect(isValid).toBe(expectedResult);
   });
 });
 
@@ -90,17 +90,20 @@ describe('Equality Check', () => {
     { valueCheck: OneOf('a', 'b'), value: 'a', expectedResult: true },
     { valueCheck: OneOf('a', 'b'), value: 'b', expectedResult: true },
     { valueCheck: OneOf('a', 'b'), value: 'c', expectedResult: false },
+    { valueCheck: OneOf('a', 'b', null), value: null, expectedResult: true },
+    { valueCheck: OneOf(5, undefined), value: null, expectedResult: false },
   ])('Should check if value is equals when provided with a value-check', ({ valueCheck, value, expectedResult }) => {
     // Arrange
     const Check = typeCheckFactory(valueCheck);
 
     // Act
-    const result = Check.isValid({
+    const { isValid } = Check.isValid({
       value
     });
 
     // Assert
-    expect(result).toBe(expectedResult);
+    expect(isValid).toBe(expectedResult);
+    //console.log(Check.name, value)
   });
 });
 
@@ -116,12 +119,12 @@ describe('Instance Of Check', () => {
     const Check = typeCheckFactory(Type);
 
     // Act
-    const result = Check.isValid({
+    const { isValid } = Check.isValid({
       value
     });
 
     // Assert
-    expect(result).toBe(expectedResult);
+    expect(isValid).toBe(expectedResult);
   });
 });
 
@@ -142,13 +145,13 @@ describe(`${PromiseOf.name}`, () => {
     const value = implementation();
 
     // Act
-    const result = Check.isValid({
+    const { isValid } = Check.isValid({
       value
     });
     await value;
 
     // Assert
-    expect(result).toBe(expectedResult);
+    expect(isValid).toBe(expectedResult);
   });
 });
 
@@ -171,13 +174,16 @@ describe(`${Struct.name}`, () => {
     { value: { name: "Jane", age: '12', status: 'suspended', address: '123 Street' }, expectedResult: false },
     { value: { name: "Jane", age: 12, status: 'assigned', address: '123 Street' }, expectedResult: false },
     { value: { name: "Jane", age: 12, status: 'suspended', address: 500 }, expectedResult: false },
+    { value: { name: "Jane", age: 12, status: 'suspended', address: 500 }, expectedResult: false },
+    { value: null, expectedResult: false },
+    { value: undefined, expectedResult: false },
   ])('Should accept entries which structure complies with the given struct.', ({value, expectedResult}) => {
     // Act
-    const result = PersonType.isValid({
+    const { isValid } = PersonType.isValid({
       value
     });
 
     // Assert
-    expect(result).toBe(expectedResult);
+    expect(isValid).toBe(expectedResult);
   })
 });

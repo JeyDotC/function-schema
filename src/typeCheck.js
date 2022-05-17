@@ -24,7 +24,24 @@ export class TypeCheckError extends Error {
  * @property {*} value
  */
 
+/**
+ * @typedef {Object} ValidationResult
+ * @property {boolean} isValid
+ * @property {string?} receivedTypeName
+ */
+
+/**
+ * @callback TypeCheckImplementation
+ * @param {ValidationParam} entry
+ * @returns {boolean|ValidationResult}
+ */
+
 export class TypeCheck {
+  /**
+   * 
+   * @param {string} name 
+   * @param {TypeCheckImplementation} implementation 
+   */
   constructor(name, implementation) {
     this.implementation = implementation;
     this.name = name;
@@ -33,23 +50,28 @@ export class TypeCheck {
   /**
    * 
    * @param {ValidationParam} value
-   * @returns {boolean}
+   * @returns {ValidationResult}
    */
   isValid(value){
-    return this.implementation(value);
+    const result = this.implementation(value);
+    if(typeof result === "boolean"){
+      return { isValid: result };
+    }
+
+    return result;
   }
   
   /**
    * @param {ValidationParam} value 
    */
   perform(value) {
-    const isValid = this.isValid(value);
+    const { isValid, receivedTypeName } = this.isValid(value);
     if(!isValid){
       throw new TypeCheckError({
         kind: value.kind,
         index: value.index,
         expectedTypeName: this.name,
-        receivedTypeName: typeof value.value,
+        receivedTypeName: receivedTypeName || typeof value,
       })
     }
   }
