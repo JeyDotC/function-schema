@@ -71,7 +71,7 @@ export class TypeCheck {
         kind: value.kind,
         index: value.index,
         expectedTypeName: this.name,
-        receivedTypeName: receivedTypeName || typeof value,
+        receivedTypeName: receivedTypeName || typeof value.value,
       })
     }
   }

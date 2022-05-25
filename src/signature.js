@@ -1,14 +1,14 @@
 import { typeCheckFactory, Void } from './typeChecks.js';
 import { ValueKind } from './typeCheck.js';
 
-function functionSignature(...typeSpecs) {
-  const paramChecks = typeSpecs.map(typeCheckFactory);
+function functionSignature(...parameterTypeSpecs) {
+  const paramChecks = parameterTypeSpecs.map(typeCheckFactory);
 
-  return (returnType) => {
-    const returnCheck = typeCheckFactory(returnType || Void);
+  const setReturnCheck = (returnTypeSpec) => {
+    const returnCheck = typeCheckFactory(returnTypeSpec || Void);
 
-    const signature = (target) => {
-      const func = (...params) => {
+    const setImplementation = (functionImplementation) => {
+      const checkedImplementation = (...params) => {
         // perform type checks.
         paramChecks.forEach((check, index) => check.perform({
           value: params[index],
@@ -17,7 +17,7 @@ function functionSignature(...typeSpecs) {
         }));
 
         // Perform action.
-        const result = target(...params);
+        const result = functionImplementation(...params);
 
         // Perform return type checks.
         returnCheck.perform({
@@ -28,30 +28,32 @@ function functionSignature(...typeSpecs) {
         return result;
       }
 
-      func.meta = {
-        name: target.name,
-        signature,
+      checkedImplementation.meta = {
+        name: functionImplementation.name,
+        signature: setImplementation,
       };
 
-      func.toString = () => `${func.meta.name}${func.meta.signature}`;
+      checkedImplementation.toString = () => `${checkedImplementation.meta.name}${checkedImplementation.meta.signature}`;
 
-      return func;
+      return checkedImplementation;
     }
 
-    signature.meta = {
+    setImplementation.meta = {
       paramChecks,
       returnCheck,
     };
-    signature.toString = () => {
+    setImplementation.toString = () => {
       const {
         paramChecks,
         returnCheck
-      } = signature.meta;
+      } = setImplementation.meta;
       return `(${paramChecks.map(c => c.name).join(', ')}): ${returnCheck.name}`;
     };
 
-    return signature;
+    return setImplementation;
   }
+
+  return setReturnCheck;
 }
 
 export { functionSignature as signature }
