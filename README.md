@@ -1,6 +1,14 @@
+Install
+
+```bash
+npm install function-schema
+```
+
 Usage
 
 ```javascript
+import { signature } from 'function-schema';
+
 const myFunction = signature(...ParamTypeChecks)(ReturnValueCheck)(functionDefinition);
 ```
 

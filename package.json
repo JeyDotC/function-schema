@@ -5,6 +5,7 @@
   "main": "./src/index.js",
   "typings": "./function-schema.d.ts",
   "types": "./function-schema.d.ts",
+  "repository": "github:JeyDotC/function-signature",
   "scripts": {
     "test": "jest --coverage"
   },
