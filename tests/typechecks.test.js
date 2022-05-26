@@ -1,4 +1,4 @@
-import { Any, Int, OneOf, Optional, PromiseOf, Struct, typeCheckFactory, Void } from "../src/typeChecks.js";
+const { Any, Int, OneOf, Optional, PromiseOf, Struct, typeCheckFactory, Void } = require("../src/typeChecks");
 
 const listOfAnyValues = [
   null,

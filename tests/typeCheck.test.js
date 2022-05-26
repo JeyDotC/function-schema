@@ -1,5 +1,4 @@
-import { TypeCheck, ValueKind } from "../src/typeCheck.js";
-import {jest} from '@jest/globals'
+const { TypeCheck, ValueKind } = require("../src/typeCheck");
 
 describe(`${TypeCheck.name}.isValid`, () => {
   it.each([

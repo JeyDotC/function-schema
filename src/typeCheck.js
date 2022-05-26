@@ -1,12 +1,12 @@
 /**
  * @enum
  */
-export const ValueKind = {
+const ValueKind = {
   Parameter: 0,
   ReturnValue: 1,
 }
 
-export class TypeCheckError extends Error {
+class TypeCheckError extends Error {
   constructor({
     kind,
     index,
@@ -36,7 +36,7 @@ export class TypeCheckError extends Error {
  * @returns {boolean|ValidationResult}
  */
 
-export class TypeCheck {
+class TypeCheck {
   /**
    * 
    * @param {string} name 
@@ -52,21 +52,21 @@ export class TypeCheck {
    * @param {ValidationParam} value
    * @returns {ValidationResult}
    */
-  isValid(value){
+  isValid(value) {
     const result = this.implementation(value);
-    if(typeof result === "boolean"){
+    if (typeof result === "boolean") {
       return { isValid: result };
     }
 
     return result;
   }
-  
+
   /**
    * @param {ValidationParam} value 
    */
   perform(value) {
     const { isValid, receivedTypeName } = this.isValid(value);
-    if(!isValid){
+    if (!isValid) {
       throw new TypeCheckError({
         kind: value.kind,
         index: value.index,
@@ -75,4 +75,10 @@ export class TypeCheck {
       })
     }
   }
+}
+
+module.exports = {
+  ValueKind,
+  TypeCheckError,
+  TypeCheck,
 }

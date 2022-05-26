@@ -2,10 +2,11 @@
   "name": "function-schema",
   "version": "0.0.1",
   "description": "Define your function signature so it is type-checked!",
-  "main": "index.js",
-  "type": "module",
+  "main": "./src/index.js",
+  "typings": "./function-schema.d.ts",
+  "types": "./function-schema.d.ts",
   "scripts": {
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest --coverage"
+    "test": "jest --coverage"
   },
   "keywords": [
     "type-check",

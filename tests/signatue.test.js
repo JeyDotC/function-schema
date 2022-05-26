@@ -1,5 +1,4 @@
-import { signature } from "../src/signature";
-import {jest} from '@jest/globals'
+const { signature } = require("../src/signature");
 
 describe('signature', () => {
   it.each([

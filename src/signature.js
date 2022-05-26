@@ -1,5 +1,5 @@
-import { typeCheckFactory, Void } from './typeChecks.js';
-import { ValueKind } from './typeCheck.js';
+const { typeCheckFactory, Void } = require('./typeChecks');
+const { ValueKind } = require('./typeCheck');
 
 function functionSignature(...parameterTypeSpecs) {
   const paramChecks = parameterTypeSpecs.map(typeCheckFactory);
@@ -56,4 +56,6 @@ function functionSignature(...parameterTypeSpecs) {
   return setReturnCheck;
 }
 
-export { functionSignature as signature }
+module.exports = {
+  signature: functionSignature,
+}

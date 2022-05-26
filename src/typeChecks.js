@@ -1,7 +1,7 @@
-import is from "is";
-import { TypeCheck } from "./typeCheck.js";
+const is = require("is");
+const { TypeCheck } = require("./typeCheck");
 
-function guessTypeName(Type){
+function guessTypeName(Type) {
   if (Type === null) {
     return 'null';
   }
@@ -11,14 +11,14 @@ function guessTypeName(Type){
   }
 
   const name = Type.name;
-  if(name !== undefined){
+  if (name !== undefined) {
     return name;
   }
 
   if (typeof Type === 'string') {
     return `'${Type}'`;
   }
-  
+
   return Type;
 }
 
@@ -37,14 +37,14 @@ const InstanceOfBooleanCheck = new TypeCheck(
   ({ value }) => is.boolean(value)
 );
 
-export const Int = new TypeCheck(
+const Int = new TypeCheck(
   'int',
   ({ value }) => is.integer(value)
 );
 
-export const Any = new TypeCheck("any", () => true);
+const Any = new TypeCheck("any", () => true);
 
-export const Void = Any;
+const Void = Any;
 Void.name = 'void';
 
 function EqualityCheck(valueToCompare) {
@@ -69,14 +69,14 @@ function InstanceOf(Type) {
 }
 
 
-export function Optional(Type) {
+function Optional(Type) {
   return new TypeCheck(
     `Optional<${guessTypeName(Type)}>`,
     (entry) => (entry.value === undefined || entry.value === null || typeCheckFactory(Type).isValid(entry))
   );
 }
 
-export function OneOf(...types) {
+function OneOf(...types) {
   const expectedTypeName = `OneOf<${types.map(guessTypeName).join(', ')}>`;
   return new TypeCheck(
     expectedTypeName,
@@ -84,7 +84,7 @@ export function OneOf(...types) {
   );
 }
 
-export function PromiseOf(Type) {
+function PromiseOf(Type) {
   return new TypeCheck(
     `Promise<${guessTypeName(Type)}>`,
     (entry) => {
@@ -104,7 +104,7 @@ export function PromiseOf(Type) {
 }
 
 // TODO: This is violating Liskov substitution principle!! I must create a TypeCheckSubclass for this.
-export function Struct(objectSpec) {
+function Struct(objectSpec) {
   const entries = Object.entries(objectSpec).map(([prop, type]) => [prop, typeCheckFactory(type)]);
   const structure = entries.map(([prop, typeCheck]) => `${prop}: ${typeCheck.name}`).join(',\n');
 
@@ -140,7 +140,7 @@ export function Struct(objectSpec) {
   );
 }
 
-export function typeCheckFactory(spec) {
+function typeCheckFactory(spec) {
   if (spec instanceof TypeCheck) {
     return spec;
   }
@@ -159,3 +159,14 @@ export function typeCheckFactory(spec) {
 
   return InstanceOf(spec);
 }
+
+module.exports = {
+  Int,
+  Any,
+  Void,
+  Optional,
+  OneOf,
+  PromiseOf,
+  Struct,
+  typeCheckFactory,
+};

@@ -1,9 +1,9 @@
-import { signature } from './signature.js';
-import { Any, InstanceOf, OneOf, Optional, PromiseOf, Void, typeCheckFactory, } from './typeChecks.js';
-import { TypeCheck, TypeCheckError, ValueKind } from './typeCheck.js';
+const {signature} = require('./signature');
+const { TypeCheck, ValueKind } = require("./typeCheck");
+const { Any, Int, OneOf, Optional, PromiseOf, Struct, typeCheckFactory, Void } = require("./typeChecks");
 
-export {
+module.exports = {
   signature,
-  Any, InstanceOf, OneOf, Optional, PromiseOf, Void, typeCheckFactory,
-  TypeCheck, TypeCheckError, ValueKind
+  TypeCheck, ValueKind,
+  Any, Int, OneOf, Optional, PromiseOf, Struct, typeCheckFactory, Void,
 }
