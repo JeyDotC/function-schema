@@ -1,10 +1,10 @@
-Install
+## Install
 
 ```bash
 npm install function-schema
 ```
 
-Usage
+## Usage
 
 ```javascript
 import { signature } from 'function-schema';
@@ -12,11 +12,13 @@ import { signature } from 'function-schema';
 const myFunction = signature(...ParamTypeChecks)(ReturnValueCheck)(functionDefinition);
 ```
 
-Examples:
+## Examples:
 
 Define your function signature
 
 ```javascript
+import { signature, Void } from 'function-schema';
+
 // myFunction(name: string): void
 const myFunction = signature(String)(Void)(
   (name) => console.log(`Hello, ${name}`),
@@ -34,6 +36,8 @@ myFunction(300); // TypeCheckError: Parameter 0 must be an instance of string, r
 Return value:
 
 ```javascript
+import { signature } from 'function-schema';
+
 // myFunction(name: string): string
 const myFunction = signature(String)(String)(
   (name) => `Hello, ${name}`,
@@ -43,6 +47,8 @@ const myFunction = signature(String)(String)(
 Optional parameters
 
 ```javascript
+import { signature, Optional, Int } from 'function-schema';
+
 // myFunction(name: string, age: Optional<int>): string
 const myFunction = signature(String, Optional(Int))(String)(
   (name, age) => `I'm ${name}, and I'm ${age !== undefined ? age : 'infinite'} years old`,
@@ -59,6 +65,8 @@ myFunction('Josh', 'Foo'); // TypeCheckError: Parameter 1 must be an instance of
 Instance Of
 
 ```javascript
+import { signature, InstanceOf } from 'function-schema';
+
 class MyClass {
   constructor(name){
     this.name = name;
@@ -84,6 +92,8 @@ myFunction({ name: 'John' }); // TypeCheckError: Parameter 0 must be an instance
 Any
 
 ```javascript
+import { signature, Any } from 'function-schema';
+
 // myFunction(name: any): void
 const myFunction = signature(Any)()(
   (something) => console.log(something),
@@ -101,6 +111,8 @@ myFunction({ x: 0, y: 0 }); // { x: 0, y: 0 }
 One Of
 
 ```javascript
+import { signature, OneOf } from 'function-schema';
+
 const myFunction = signature(OneOf(String, Number))()(
   (value) => console.log(value);
 );
@@ -118,6 +130,8 @@ myFunction(() => 'Boom!');  // TypeCheckError: Parameter 0 must be an instance o
 Struct
 
 ```javascript
+import { signature, Struct } from 'function-schema';
+
 // Define your structure:
 const MyType = Struct({
   name: String,
@@ -156,6 +170,8 @@ myFunction({ });
 Promise Of
 
 ```javascript
+import { signature, PromiseOf } from 'function-schema';
+
 const myPromiseProducingFunction = signature()(PromiseOf(String))(
   () => new Promise((accept) => accept('Some Text'))
 );
@@ -173,6 +189,8 @@ const myAsyncFunction = signature()(PromiseOf(String))(
 Use signatures as function factories
 
 ```javascript
+import { signature } from 'function-schema';
+
 const RequestHandler = signature(MyRequestClass)(MyResponseClass);
 
 const listUsers = RequestHandler((request) => new MyResponseClass());
@@ -203,7 +221,7 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 [1, '!', 3, 4].map(numbersToString); // TypeCheckError: Parameter 0 must be an instance of number, received string instead.
 ```
 
-All type checks so far
+## All type checks so far
 
 | Type Check | Description | Usage |
 |------------|-------------|-------|
