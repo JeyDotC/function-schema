@@ -1,27 +1,6 @@
 const is = require("is");
 const { TypeCheck } = require("./typeCheck");
 
-function guessTypeName(Type) {
-  if (Type === null) {
-    return 'null';
-  }
-
-  if (Type === undefined) {
-    return 'undefined';
-  }
-
-  const name = Type.name;
-  if (name !== undefined) {
-    return name;
-  }
-
-  if (typeof Type === 'string') {
-    return `'${Type}'`;
-  }
-
-  return Type;
-}
-
 const InstanceOfStringCheck = new TypeCheck(
   'string',
   ({ value }) => typeof value === 'string'
@@ -44,8 +23,7 @@ const Int = new TypeCheck(
 
 const Any = new TypeCheck("any", () => true);
 
-const Void = Any;
-Void.name = 'void';
+const Void =  new TypeCheck("void", () => true);
 
 function EqualityCheck(valueToCompare) {
   let name = valueToCompare;
@@ -63,36 +41,39 @@ function EqualityCheck(valueToCompare) {
 
 function InstanceOf(Type) {
   return new TypeCheck(
-    guessTypeName(Type),
+    Type?.name || typeof Type,
     ({ value }) => value instanceof Type
   );
 }
 
 
 function Optional(Type) {
+  const innerTypeCheck = typeCheckFactory(Type);
   return new TypeCheck(
-    `Optional<${guessTypeName(Type)}>`,
-    (entry) => (entry.value === undefined || entry.value === null || typeCheckFactory(Type).isValid(entry))
+    `Optional<${innerTypeCheck.name}>`,
+    (entry) => (entry.value === undefined || entry.value === null || innerTypeCheck.isValid(entry))
   );
 }
 
 function OneOf(...types) {
-  const expectedTypeName = `OneOf<${types.map(guessTypeName).join(', ')}>`;
+  const innerTypeChecks = types.map(typeCheckFactory);
+  const expectedTypeName = `OneOf<${innerTypeChecks.map(t => t.name).join(', ')}>`;
   return new TypeCheck(
     expectedTypeName,
-    (entry) => types.some((T) => typeCheckFactory(T).isValid(entry).isValid)
+    (entry) => innerTypeChecks.some((check) => check.isValid(entry).isValid)
   );
 }
 
 function PromiseOf(Type) {
+  const innerTypeCheck = typeCheckFactory(Type);
   return new TypeCheck(
-    `Promise<${guessTypeName(Type)}>`,
+    `Promise<${innerTypeCheck.name}>`,
     (entry) => {
       const isPromise = entry.value instanceof Promise;
       if (isPromise) {
         // Do a type check on the promise's returned value.
         entry.value.then((value) => {
-          typeCheckFactory(Type).perform({
+          innerTypeCheck.perform({
             ...entry,
             value
           });
