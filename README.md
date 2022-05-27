@@ -243,28 +243,30 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 
 ## TODO
 
-Get rid of `is.js` dependency.
+### Get rid of `is.js` dependency.
 
-Future Checks:
+### Future Checks:
 
-[ ] Truthy
-[ ] Falsey
-[ ] Matches
-[ ] Email
-[ ] NumericString
-[ ] IntString
-[ ] BooleanString: Case insensitive version of OneOf('true', 'false')
-[ ] Variadic (?)
-[ ] ArrayOf (?)
-[ ] Tuple: Understanding tuple as `[TypeCheck1, TypeCheck2, ...]`
+- [ ] Truthy
+- [ ] Falsey
+- [ ] Matches
+- [ ] Email
+- [ ] NumericString
+- [ ] IntString
+- [ ] BooleanString: Case insensitive version of OneOf('true', 'false')
+- [ ] Variadic (?)
+- [ ] ArrayOf (?)
+- [ ] Tuple: Understanding tuple as `[TypeCheck1, TypeCheck2, ...]`
 
-Type Constraints? (This one looks tricky, might not be a good idea)
+### Type Constraints? 
 
+(This one looks tricky, might not be a good idea)
+
+```javascript
 Constrained(TypeCheck, Constraint1, Constraint2)
-
-Or 
-
+// Or...
 TypeCheck.where(Constraint1, Constraint2);
+````
 
 - [ ] Min
 - [ ] Max
