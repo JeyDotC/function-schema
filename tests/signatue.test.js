@@ -1,4 +1,5 @@
 const { signature } = require("../src/signature");
+const { Optional, PromiseOf, OneOf } = require("../src/typeChecks");
 
 describe('signature', () => {
   it.each([
@@ -81,4 +82,88 @@ describe('signature', () => {
     expect(implementation).toBeCalledWith(...invokeParameters);
     expect(implementation).toHaveReturnedWith(invokeReturn);
   });
-})
+});
+
+describe('signature.meta', () => {
+  it.each([
+    { paramChecks: [], returnCheck: undefined, expectedMeta: { paramChecks: [], returnCheck: 'void' } },
+    { paramChecks: [String], returnCheck: undefined, expectedMeta: { paramChecks: ['string'], returnCheck: 'void' } },
+    { paramChecks: [String, Number], returnCheck: undefined, expectedMeta: { paramChecks: ['string', 'number'], returnCheck: 'void' } },
+
+    { paramChecks: [], returnCheck: String, expectedMeta: { paramChecks: [], returnCheck: 'string' } },
+    { paramChecks: [String], returnCheck: String, expectedMeta: { paramChecks: ['string'], returnCheck: 'string' } },
+    { paramChecks: [String, Number], returnCheck: String, expectedMeta: { paramChecks: ['string', 'number'], returnCheck: 'string' } },
+
+    { paramChecks: [Optional(String)], returnCheck: PromiseOf(Number), expectedMeta: { paramChecks: ['Optional<string>'], returnCheck: 'Promise<number>' } },
+    { paramChecks: [OneOf('', undefined, null)], returnCheck: undefined, expectedMeta: { paramChecks: ["OneOf<'', undefined, null>"], returnCheck: 'void' } },
+    { paramChecks: [Array], returnCheck: undefined, expectedMeta: { paramChecks: ["Array"], returnCheck: 'void' } },
+    { paramChecks: [() => { }], returnCheck: undefined, expectedMeta: { paramChecks: ["function"], returnCheck: 'void' } },
+  ])('Should contain a metadata object', ({ paramChecks, returnCheck, expectedMeta }) => {
+    // Act
+    const FuncType = signature(...paramChecks)(returnCheck);
+
+    // Assert
+    expect(FuncType.meta).toEqual(expectedMeta);
+  });
+
+  it.each([
+    'paramChecks',
+    'returnCheck',
+  ])('Properties should be read only', (property) => {
+    'use strict';
+    // Arrange
+    const FuncType = signature(String, Number)();
+
+    // Act
+    const act = () => FuncType.meta[property] = "";
+
+    // Assert
+    expect(act).toThrow(`Cannot assign to read only property '${property}'`);
+  })
+});
+
+describe('checkedImplementation.meta', () => {
+  it.each([
+    { paramChecks: [String], returnCheck: String, implementation: () => {}, expectedName: 'implementation' },
+    { paramChecks: [String, Number], returnCheck: String,  implementation: () => {}, expectedName: 'implementation' },
+
+    { paramChecks: [String], returnCheck: String, implementation: function Foo() {}, expectedName: 'Foo' },
+    { paramChecks: [String, Number], returnCheck: String,  implementation: function Foo() {}, expectedName: 'Foo' },
+  ])('Should contain a metadata object', ({ paramChecks, returnCheck, implementation, expectedName }) => {
+    // Act
+    const FuncType = signature(...paramChecks)(returnCheck);
+    const Func = FuncType(implementation);
+
+    // Assert
+    expect(Func.meta).toEqual({
+      name: expectedName,
+      signature: FuncType
+    });
+  });
+
+  it('Should produce function with empty name whe given anonymous function', () => {
+    // Arrange
+    const Func = signature()()(() => {});
+
+    // Act
+    const name = Func.meta.name;
+
+    // Assert
+    expect(name).toBe('');
+  })
+
+  it.each([
+    'name',
+    'signature',
+  ])('Properties should be read only', (property) => {
+    'use strict';
+    // Arrange
+    const Func = signature(String, Number)()(() => {});
+
+    // Act
+    const act = () => Func.meta[property] = "";
+
+    // Assert
+    expect(act).toThrow(`Cannot assign to read only property '${property}'`);
+  })
+});

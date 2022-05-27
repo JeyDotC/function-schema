@@ -45,6 +45,7 @@ class TypeCheck {
   constructor(name, implementation) {
     this.implementation = implementation;
     this.name = name;
+    Object.freeze(this);
   }
 
   /**

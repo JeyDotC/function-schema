@@ -28,26 +28,26 @@ function functionSignature(...parameterTypeSpecs) {
         return result;
       }
 
-      checkedImplementation.meta = {
+      checkedImplementation.meta = Object.freeze({
         name: functionImplementation.name,
         signature: setImplementation,
-      };
+      });
 
       checkedImplementation.toString = () => `${checkedImplementation.meta.name}${checkedImplementation.meta.signature}`;
 
       return checkedImplementation;
     }
 
-    setImplementation.meta = {
-      paramChecks,
-      returnCheck,
-    };
+    setImplementation.meta = Object.freeze({
+      paramChecks: paramChecks.map(c => c.name),
+      returnCheck: returnCheck.name,
+    });
     setImplementation.toString = () => {
       const {
         paramChecks,
         returnCheck
       } = setImplementation.meta;
-      return `(${paramChecks.map(c => c.name).join(', ')}): ${returnCheck.name}`;
+      return `(${paramChecks.join(', ')}): ${returnCheck}`;
     };
 
     return setImplementation;

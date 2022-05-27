@@ -48,3 +48,17 @@ describe(`${TypeCheck.name}.perform`, () => {
     expect(act).toThrow(expectedMessage);
   });
 });
+
+describe(`${TypeCheck.name}`, () => {
+  it.each(['name', 'implementation'])('Should be readonly', (property) => {
+    'use strict';
+    // Arrange
+    const check = new TypeCheck('foo', () => true);
+
+    // Act
+    const act = () => check[property] = 'bar';
+
+    // Assert
+    expect(act).toThrow(`Cannot assign to read only property '${property}'`);
+  });
+})
