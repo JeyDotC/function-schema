@@ -240,3 +240,36 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 | OneOf\<Type1, Type2, ...\> | Checks if the value is of one of the given types | `const myFunction = signature(OneOf(String, Number))(OneOf(Number, Boolean))`  <br /> Or as an enum:<br /> `const myFunction = signature(OneOf('a', 'b'))(OneOf(0, 1))` |
 | PromiseOf\<Type\> | Ensures the value is a promise, and once resolved, it checks the promise has returned the correct type | `const myFunction = signature()(PromiseOf(String))` |
 | Struct | Checks if the value complies with the given structure. The object must at least have the same properties and each property should validate against its type, extra properties will be ignored. | `const myFunction = signature(Struct({ name: String, age: Int, status: OneOf('active', 'suspended') }))(Void)` |
+
+## TODO
+
+Get rid of `is.js` dependency.
+
+Future Checks:
+
+[ ] Truthy
+[ ] Falsey
+[ ] Matches
+[ ] Email
+[ ] NumericString
+[ ] IntString
+[ ] BooleanString: Case insensitive version of OneOf('true', 'false')
+[ ] Variadic (?)
+[ ] ArrayOf (?)
+[ ] Tuple: Understanding tuple as `[TypeCheck1, TypeCheck2, ...]`
+
+Type Constraints? (This one looks tricky, might not be a good idea)
+
+Constrained(TypeCheck, Constraint1, Constraint2)
+
+Or 
+
+TypeCheck.where(Constraint1, Constraint2);
+
+- [ ] Min
+- [ ] Max
+- [ ] Range
+- [ ] MinLength
+- [ ] MaxLength
+- [ ] RangeLength
+- [ ] (value) => boolean
