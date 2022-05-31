@@ -1,4 +1,3 @@
-const is = require("is");
 const { TypeCheck } = require("./typeCheck");
 
 const InstanceOfStringCheck = new TypeCheck(
@@ -8,17 +7,17 @@ const InstanceOfStringCheck = new TypeCheck(
 
 const InstanceOfNumberCheck = new TypeCheck(
   'number',
-  ({ value }) => is.number(value)
+  ({ value }) => Number.isFinite(value)
 );
 
 const InstanceOfBooleanCheck = new TypeCheck(
   'boolean',
-  ({ value }) => is.boolean(value)
+  ({ value }) => value === true || value === false || toString.call(value) === '[object Boolean]'
 );
 
 const Int = new TypeCheck(
   'int',
-  ({ value }) => is.integer(value)
+  ({ value }) => Number.isInteger(value)
 );
 
 const Any = new TypeCheck("any", () => true);

@@ -241,6 +241,10 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 | PromiseOf\<Type\> | Ensures the value is a promise, and once resolved, it checks the promise has returned the correct type | `const myFunction = signature()(PromiseOf(String))` |
 | Struct | Checks if the value complies with the given structure. The object must at least have the same properties and each property should validate against its type, extra properties will be ignored. | `const myFunction = signature(Struct({ name: String, age: Int, status: OneOf('active', 'suspended') }))(Void)` |
 
+## Thanks to:
+
+* @arasatasaygin - For the [is.js](https://github.com/arasatasaygin/is.js) library from which I'm actively stealing checks for this library. 
+
 ## TODO
 
 ### Get rid of `is.js` dependency.

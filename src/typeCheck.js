@@ -1,10 +1,10 @@
 /**
  * @enum
  */
-const ValueKind = {
+const ValueKind = Object.freeze({
   Parameter: 0,
   ReturnValue: 1,
-}
+});
 
 class TypeCheckError extends Error {
   constructor({
