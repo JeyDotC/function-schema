@@ -247,7 +247,7 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 
 ## TODO
 
-### Get rid of `is.js` dependency.
+### ~~Get rid of `is.js` dependency.~~
 
 ### Future Checks:
 
