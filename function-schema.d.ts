@@ -30,6 +30,16 @@ export declare interface SetReturnTypeCheck {
 
 export declare function signature(...params: TypeCheckSpec[]): SetReturnTypeCheck;
 
+export declare function typeCheckFactory(spec: TypeCheckSpec): TypeCheck;
+
+export declare function OneOf(...typeSpecs: TypeCheckSpec[]): TypeCheck;
+
+export declare function Optional(spec: TypeCheckSpec): TypeCheck;
+
+export declare function Struct(spec: Record<string, TypeCheckSpec>): TypeCheck;
+
+export declare function PromiseOf(spec: TypeCheckSpec): TypeCheck;
+
 export { TypeCheck, TypeCheckError, ValidationParam, ValidationResult, ValueKind, TypeCheckImplementation } from './src/typeCheck';
 
-export { Any, Int, OneOf, Optional, PromiseOf, Struct, Void, typeCheckFactory } from "./src/typeChecks";
+export { Any, Int, Void } from "./src/typeChecks";

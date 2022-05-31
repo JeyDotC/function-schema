@@ -1,6 +1,6 @@
 {
   "name": "function-schema",
-  "version": "0.0.2",
+  "version": "0.0.4",
   "description": "Define your function signature so it is type-checked!",
   "main": "./src/index.js",
   "typings": "./function-schema.d.ts",
@@ -16,9 +16,6 @@
   ],
   "author": "JeyDotC",
   "license": "MIT",
-  "dependencies": {
-    "is": "^3.3.0"
-  },
   "devDependencies": {
     "@types/jest": "^27.5.1",
     "jest": "^28.1.0"
