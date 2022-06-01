@@ -104,11 +104,13 @@ describe(`${Optional.name}`, () => {
     { Type: Number, value: null, expectedResult: true },
     { Type: Number, value: undefined, expectedResult: true },
     { Type: Number, value: '', expectedResult: false },
+    { Type: Number, value: '500', expectedResult: false },
 
     { Type: Int, value: 500, expectedResult: true },
     { Type: Int, value: null, expectedResult: true },
     { Type: Int, value: undefined, expectedResult: true },
     { Type: Int, value: 12.6, expectedResult: false },
+    { Type: Int, value: '500', expectedResult: false },
 
     { Type: Boolean, value: true, expectedResult: true },
     { Type: Boolean, value: false, expectedResult: true },

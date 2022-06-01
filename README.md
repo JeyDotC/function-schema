@@ -256,11 +256,12 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 
 String Checks
 
-- [ ] Matches
-- [ ] Email
-- [ ] NumericString
-- [ ] IntString
-- [ ] BooleanString: Case insensitive version of OneOf('true', 'false')
+- [*] Matches
+- [*] Email
+- [*] Url
+- [*] NumericString
+- [*] IntString
+- [*] BooleanString: Case insensitive version of OneOf('true', 'false')
 
 Collection Checks
 

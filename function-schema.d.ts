@@ -45,3 +45,5 @@ export declare function Matches(expression: RegExp): TypeCheck;
 export { TypeCheck, TypeCheckError, ValidationParam, ValidationResult, ValueKind, TypeCheckImplementation } from './src/typeCheck';
 
 export { Any, Int, Void, Truthy, Falsy } from "./src/typeChecks";
+
+export { Email, Url, BooleanString, IntString, NumericString } from "./src/stringTypeChecks";
