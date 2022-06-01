@@ -1,8 +1,12 @@
 const { typeCheckFactory, Void } = require('./typeChecks');
-const { ValueKind } = require('./typeCheck');
+const { ValueKind, TypeCheck } = require('./typeCheck');
 
 function functionSignature(...parameterTypeSpecs) {
-  const paramChecks = parameterTypeSpecs.map(typeCheckFactory);
+  const lastParameterCheck = parameterTypeSpecs[parameterTypeSpecs.length - 1];
+  const variadicCheck = lastParameterCheck instanceof TypeCheck && lastParameterCheck.name.startsWith('...') ? lastParameterCheck : undefined;
+  const paramChecks = (
+      variadicCheck !== undefined ? parameterTypeSpecs.slice(0, -1) : parameterTypeSpecs
+    ).map(typeCheckFactory);
 
   const setReturnCheck = (returnTypeSpec) => {
     const returnCheck = typeCheckFactory(returnTypeSpec || Void);
@@ -15,6 +19,17 @@ function functionSignature(...parameterTypeSpecs) {
           kind: ValueKind.Parameter,
           index,
         }));
+
+        // Perform variadic check if applicable
+        if(variadicCheck !== undefined && params.length > paramChecks.length){
+          const index = Math.max(paramChecks.length - 1, 0);
+          const variadicParams = params.slice(index);
+          variadicCheck.perform({
+            value: variadicParams,
+            kind: ValueKind.Parameter,
+            index,
+          })
+        }
 
         // Perform action.
         const result = functionImplementation(...params);

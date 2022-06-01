@@ -56,7 +56,7 @@ class TypeCheck {
   isValid(value) {
     const result = this.implementation(value);
     if (typeof result === "boolean") {
-      return { isValid: result };
+      return { isValid: result,  receivedTypeName: typeof value.value };
     }
 
     return result;
@@ -72,7 +72,7 @@ class TypeCheck {
         kind: value.kind,
         index: value.index,
         expectedTypeName: this.name,
-        receivedTypeName: receivedTypeName || typeof value.value,
+        receivedTypeName: receivedTypeName,
       })
     }
   }

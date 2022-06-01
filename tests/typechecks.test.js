@@ -1,4 +1,4 @@
-const { Any, Int, OneOf, Optional, PromiseOf, Struct, typeCheckFactory, Void, Truthy, Falsy } = require("../src/typeChecks");
+const { Any, Int, OneOf, Optional, PromiseOf, Struct, typeCheckFactory, Void, Truthy, Falsy, Variadic } = require("../src/typeChecks");
 
 const listOfAnyValues = [
   null,
@@ -60,7 +60,7 @@ const falsyValues = [
 describe(`${Truthy.name}`, () => {
   it.each(truthyValues)('Should accept truthy values', (value) => {
     // Act
-    const { isValid } = Truthy.isValid({value});
+    const { isValid } = Truthy.isValid({ value });
 
     // Assert
     expect(isValid).toBe(true);
@@ -68,7 +68,7 @@ describe(`${Truthy.name}`, () => {
 
   it.each(falsyValues)('Should reject falsy values', (value) => {
     // Act
-    const { isValid } = Truthy.isValid({value});
+    const { isValid } = Truthy.isValid({ value });
 
     // Assert
     expect(isValid).toBe(false);
@@ -78,7 +78,7 @@ describe(`${Truthy.name}`, () => {
 describe(`${Falsy.name}`, () => {
   it.each(falsyValues)('Should accept falsy values', (value) => {
     // Act
-    const { isValid } = Falsy.isValid({value});
+    const { isValid } = Falsy.isValid({ value });
 
     // Assert
     expect(isValid).toBe(true);
@@ -86,7 +86,7 @@ describe(`${Falsy.name}`, () => {
 
   it.each(truthyValues)('Should reject truthy values', (value) => {
     // Act
-    const { isValid } = Falsy.isValid({value});
+    const { isValid } = Falsy.isValid({ value });
 
     // Assert
     expect(isValid).toBe(false);
@@ -244,4 +244,30 @@ describe(`${Struct.name}`, () => {
     // Assert
     expect(isValid).toBe(expectedResult);
   })
+});
+
+describe(`${Variadic.name}`, () => {
+  it.each([
+    { Type: Int, value: null, expectedResult: true, expectedReceivedTypeName: '' },
+    { Type: Int, value: undefined, expectedResult: true, expectedReceivedTypeName: '' },
+    { Type: Int, value: [], expectedResult: true, expectedReceivedTypeName: '' },
+    { Type: Int, value: [0], expectedResult: true, expectedReceivedTypeName: '' },
+    { Type: Int, value: [0, 1], expectedResult: true, expectedReceivedTypeName: '' },
+    { Type: Int, value: [0, 1, 2], expectedResult: true, expectedReceivedTypeName: '' },
+    { Type: Any, value: ['0', 1.2, 2], expectedResult: true, expectedReceivedTypeName: '' },
+
+    { Type: Int, value: [0, 1.2, 2], expectedResult: false, expectedReceivedTypeName: 'number@1' },
+    { Type: Int, value: ['0', 1.2, 2], expectedResult: false, expectedReceivedTypeName: 'string@0, number@1' },
+    { Type: Int, value: [0, 1, '50', 2], expectedResult: false, expectedReceivedTypeName: 'string@2' },
+  ])('Should validate a parameter list', ({ Type, value, expectedResult, expectedReceivedTypeName }) => {
+    // Arrange
+    const variadicCheck = Variadic(Type);
+
+    // Act
+    const { isValid, receivedTypeName } = variadicCheck.isValid({ value });
+
+    // Assert
+    expect(isValid).toBe(expectedResult);
+    expect(receivedTypeName).toBe(expectedReceivedTypeName);
+  });
 });
