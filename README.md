@@ -251,13 +251,19 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 
 ### Future Checks:
 
-- [ ] Truthy
-- [ ] Falsey
+- [*] Truthy
+- [*] Falsy
+
+String Checks
+
 - [ ] Matches
 - [ ] Email
 - [ ] NumericString
 - [ ] IntString
 - [ ] BooleanString: Case insensitive version of OneOf('true', 'false')
+
+Collection Checks
+
 - [ ] Variadic (?)
 - [ ] ArrayOf (?)
 - [ ] Tuple: Understanding tuple as `[TypeCheck1, TypeCheck2, ...]`

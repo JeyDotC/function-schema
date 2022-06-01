@@ -1,4 +1,4 @@
-const { Any, Int, OneOf, Optional, PromiseOf, Struct, typeCheckFactory, Void } = require("../src/typeChecks");
+const { Any, Int, OneOf, Optional, PromiseOf, Struct, typeCheckFactory, Void, Truthy, Falsy } = require("../src/typeChecks");
 
 const listOfAnyValues = [
   null,
@@ -35,6 +35,62 @@ describe(`${Void.name} (Alias of Any)`, () => {
     // Assert
     expect(isValid).toBe(true);
   })
+});
+
+const truthyValues = [
+  true,
+  1,
+  -1,
+  "Foo",
+  {},
+  [],
+  Infinity
+];
+
+const falsyValues = [
+  false,
+  0,
+  -0,
+  "",
+  null,
+  undefined,
+  NaN,
+];
+
+describe(`${Truthy.name}`, () => {
+  it.each(truthyValues)('Should accept truthy values', (value) => {
+    // Act
+    const { isValid } = Truthy.isValid({value});
+
+    // Assert
+    expect(isValid).toBe(true);
+  });
+
+  it.each(falsyValues)('Should reject falsy values', (value) => {
+    // Act
+    const { isValid } = Truthy.isValid({value});
+
+    // Assert
+    expect(isValid).toBe(false);
+  });
+});
+
+describe(`${Falsy.name}`, () => {
+  it.each(falsyValues)('Should accept falsy values', (value) => {
+    // Act
+    const { isValid } = Falsy.isValid({value});
+
+    // Assert
+    expect(isValid).toBe(true);
+  });
+
+  it.each(truthyValues)('Should reject truthy values', (value) => {
+    // Act
+    const { isValid } = Falsy.isValid({value});
+
+    // Assert
+    expect(isValid).toBe(false);
+  });
 });
 
 describe(`${Optional.name}`, () => {
@@ -156,10 +212,10 @@ describe(`${PromiseOf.name}`, () => {
 });
 
 describe(`${Struct.name}`, () => {
-  const PersonType = Struct({ 
-    name: String, 
-    age: Int, 
-    status: OneOf('active', 'suspended'),  
+  const PersonType = Struct({
+    name: String,
+    age: Int,
+    status: OneOf('active', 'suspended'),
     address: Optional(String),
   });
   it.each([
@@ -177,7 +233,7 @@ describe(`${Struct.name}`, () => {
     { value: { name: "Jane", age: 12, status: 'suspended', address: 500 }, expectedResult: false },
     { value: null, expectedResult: false },
     { value: undefined, expectedResult: false },
-  ])('Should accept entries which structure complies with the given struct.', ({value, expectedResult}) => {
+  ])('Should accept entries which structure complies with the given struct.', ({ value, expectedResult }) => {
     // Act
     const { isValid } = PersonType.isValid({
       value

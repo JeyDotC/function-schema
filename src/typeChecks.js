@@ -24,6 +24,10 @@ const Any = new TypeCheck("any", () => true);
 
 const Void =  new TypeCheck("void", () => true);
 
+const Truthy = new TypeCheck("truthy", ({ value }) => !!value);
+
+const Falsy = new TypeCheck("truthy", ({ value }) => !value);
+
 function EqualityCheck(valueToCompare) {
   let name = valueToCompare;
   if (valueToCompare === null) {
@@ -83,7 +87,6 @@ function PromiseOf(Type) {
     });
 }
 
-// TODO: This is violating Liskov substitution principle!! I must create a TypeCheckSubclass for this.
 function Struct(objectSpec) {
   const entries = Object.entries(objectSpec).map(([prop, type]) => [prop, typeCheckFactory(type)]);
   const structure = entries.map(([prop, typeCheck]) => `${prop}: ${typeCheck.name}`).join(',\n');
@@ -144,6 +147,8 @@ module.exports = {
   Int,
   Any,
   Void,
+  Truthy,
+  Falsy,
   Optional,
   OneOf,
   PromiseOf,
