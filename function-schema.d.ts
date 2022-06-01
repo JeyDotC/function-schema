@@ -40,6 +40,8 @@ export declare function Struct(spec: Record<string, TypeCheckSpec>): TypeCheck;
 
 export declare function PromiseOf(spec: TypeCheckSpec): TypeCheck;
 
+export declare function Matches(expression: RegExp): TypeCheck;
+
 export { TypeCheck, TypeCheckError, ValidationParam, ValidationResult, ValueKind, TypeCheckImplementation } from './src/typeCheck';
 
-export { Any, Int, Void } from "./src/typeChecks";
+export { Any, Int, Void, Truthy, Falsy } from "./src/typeChecks";
