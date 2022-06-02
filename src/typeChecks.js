@@ -22,7 +22,11 @@ const Int = new TypeCheck(
 
 const Any = new TypeCheck("any", () => true);
 
-const Void =  new TypeCheck("void", () => true);
+const Void = new TypeCheck("void", () => true);
+
+const Truthy = new TypeCheck("truthy", ({ value }) => !!value);
+
+const Falsy = new TypeCheck("truthy", ({ value }) => !value);
 
 function EqualityCheck(valueToCompare) {
   let name = valueToCompare;
@@ -83,7 +87,6 @@ function PromiseOf(Type) {
     });
 }
 
-// TODO: This is violating Liskov substitution principle!! I must create a TypeCheckSubclass for this.
 function Struct(objectSpec) {
   const entries = Object.entries(objectSpec).map(([prop, type]) => [prop, typeCheckFactory(type)]);
   const structure = entries.map(([prop, typeCheck]) => `${prop}: ${typeCheck.name}`).join(',\n');
@@ -120,6 +123,34 @@ function Struct(objectSpec) {
   );
 }
 
+function Variadic(spec) {
+  const variadicValidation = typeCheckFactory(spec);
+
+  return new TypeCheck(`...${variadicValidation.name}[]`, ({ value, index }) => {
+    if (!value || value.length === 0) {
+      return ({
+        isValid: true,
+        receivedTypeName: '',
+      });
+    }
+
+    const baseIndex = index || 0;
+
+    const invalidValues = value.reduce((accumulate, current, variadicIndex) => {
+      const { isValid, receivedTypeName } = variadicValidation.isValid({ value: current });
+      if (!isValid) {
+        return [...accumulate, `${receivedTypeName}@${baseIndex + variadicIndex}`]
+      }
+      return accumulate;
+    }, []);
+
+    return ({
+      isValid: invalidValues.length === 0,
+      receivedTypeName: invalidValues.join(', '),
+    })
+  })
+}
+
 function typeCheckFactory(spec) {
   if (spec instanceof TypeCheck) {
     return spec;
@@ -144,9 +175,12 @@ module.exports = {
   Int,
   Any,
   Void,
+  Truthy,
+  Falsy,
   Optional,
   OneOf,
   PromiseOf,
   Struct,
+  Variadic,
   typeCheckFactory,
 };

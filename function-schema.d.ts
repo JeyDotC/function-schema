@@ -12,14 +12,14 @@ export declare type TypeCheckedFunctionMeta = {
   signature: SetReturnTypeCheck,
 }
 
-export declare interface CheckedImplementation {
+export declare interface TypeCheckedFunction {
   (...params: any): any,
   meta: TypeCheckedFunctionMeta,
   toString(): string,
 }
 
 export declare interface SetImplementation {
-  (implementation: Function): CheckedImplementation,
+  (implementation: Function): TypeCheckedFunction,
   meta: TypeChecksMeta,
   toString(): string,
 }
@@ -40,6 +40,16 @@ export declare function Struct(spec: Record<string, TypeCheckSpec>): TypeCheck;
 
 export declare function PromiseOf(spec: TypeCheckSpec): TypeCheck;
 
-export { TypeCheck, TypeCheckError, ValidationParam, ValidationResult, ValueKind, TypeCheckImplementation } from './src/typeCheck';
+export declare function Matches(expression: RegExp): TypeCheck;
 
-export { Any, Int, Void } from "./src/typeChecks";
+export declare function Variadic(spec: TypeCheckSpec): TypeCheck;
+
+export declare function ArrayOf(spec: TypeCheckSpec): TypeCheck;
+
+export declare function Tuple(...spec: TypeCheckSpec[]): TypeCheck;
+
+export { TypeCheck, TypeCheckError, ValidationParam, ValidationResult, ValueKind } from './src/typeCheck';
+
+export { Any, Int, Void, Truthy, Falsy } from "./src/typeChecks";
+
+export { Email, Url, BooleanString, IntString, NumericString } from "./src/stringTypeChecks";

@@ -1,8 +1,16 @@
 const { typeCheckFactory, Void } = require('./typeChecks');
-const { ValueKind } = require('./typeCheck');
+const { ValueKind, TypeCheck } = require('./typeCheck');
 
 function functionSignature(...parameterTypeSpecs) {
-  const paramChecks = parameterTypeSpecs.map(typeCheckFactory);
+  const allPramChecks = parameterTypeSpecs.map(typeCheckFactory);
+
+  const lastParameterCheck = allPramChecks[parameterTypeSpecs.length - 1];
+
+  const variadicCheck = lastParameterCheck instanceof TypeCheck && lastParameterCheck.name.startsWith('...') ? lastParameterCheck : undefined;
+  
+  const nonVariadicChecks = (
+      variadicCheck !== undefined ? allPramChecks.slice(0, -1) : allPramChecks
+    );
 
   const setReturnCheck = (returnTypeSpec) => {
     const returnCheck = typeCheckFactory(returnTypeSpec || Void);
@@ -10,11 +18,22 @@ function functionSignature(...parameterTypeSpecs) {
     const setImplementation = (functionImplementation) => {
       const checkedImplementation = (...params) => {
         // perform type checks.
-        paramChecks.forEach((check, index) => check.perform({
+        nonVariadicChecks.forEach((check, index) => check.perform({
           value: params[index],
           kind: ValueKind.Parameter,
           index,
         }));
+
+        // Perform variadic check if applicable
+        if(variadicCheck !== undefined && params.length > nonVariadicChecks.length){
+          const index = nonVariadicChecks.length;
+          const variadicParams = params.slice(index);
+          variadicCheck.perform({
+            value: variadicParams,
+            kind: ValueKind.Parameter,
+            index,
+          })
+        }
 
         // Perform action.
         const result = functionImplementation(...params);
@@ -39,7 +58,7 @@ function functionSignature(...parameterTypeSpecs) {
     }
 
     setImplementation.meta = Object.freeze({
-      paramChecks: paramChecks.map(c => c.name),
+      paramChecks: allPramChecks.map(c => c.name),
       returnCheck: returnCheck.name,
     });
     setImplementation.toString = () => {
