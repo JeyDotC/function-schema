@@ -326,7 +326,9 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 | IntString | Checks if the value is a string representing an integer | `const myFunction = signature(IntString)(IntString)` |
 | BooleanString | Checks if the value is a string representing a boolean, accepts `true` or `false` case-insensitive | `const myFunction = signature(BooleanString)(BooleanString)` |
 | **Collection Checks** |||
-| Variadic\<Type\> | Receives all remaining parameters in a function and check those all are of the given type | `const myFunction = (Variadic(String))()` |
+| Variadic\<Type\> | Receives all remaining parameters in a function and check those all are of the given type | `const myFunction = (Variadic(String))()` Or `const myFunction = (Int, Variadic(String))()`  |
+| ArrayOf\<Type\> | Checks that all elements in an array are of the given type | `const myFunction = (ArrayOf(String))(ArrayOf(String))` |
+| Tuple\<Type1, Type2, ...\> | Checks if the value is an array complies with the given structure. | `const myFunction = (Tuple(String, Int))(Tuple(String, Int, Boolean))` |
 
 
 ## Thanks to:
