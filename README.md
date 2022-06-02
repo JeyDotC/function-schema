@@ -341,23 +341,23 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 
 ### ~~Future Checks:~~
 
-- [*] Truthy
-- [*] Falsy
+- [x] Truthy
+- [x] Falsy
 
 String Checks
 
-- [*] Matches
-- [*] Email
-- [*] Url
-- [*] NumericString
-- [*] IntString
-- [*] BooleanString: Case insensitive version of OneOf('true', 'false')
+- [x] Matches
+- [x] Email
+- [x] Url
+- [x] NumericString
+- [x] IntString
+- [x] BooleanString: Case insensitive version of OneOf('true', 'false')
 
 Collection Checks
 
-- [*] Variadic
-- [*] ArrayOf
-- [*] Tuple: Understanding tuple as `[TypeCheck1, TypeCheck2, ...]`
+- [x] Variadic
+- [x] ArrayOf
+- [x] Tuple: Understanding tuple as `[TypeCheck1, TypeCheck2, ...]`
 
 ### Type Constraints? 
 
