@@ -337,6 +337,26 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 
 ## TODO
 
+### Type Constraints? 
+
+(This one looks tricky, might not be a good idea)
+
+```javascript
+Constrained(TypeCheck, Constraint1, Constraint2)
+// Or...
+TypeCheck.where(Constraint1, Constraint2);
+````
+
+- [ ] Min
+- [ ] Max
+- [ ] Range
+- [ ] MinLength
+- [ ] MaxLength
+- [ ] RangeLength
+- [ ] (value) => boolean
+
+<details><summary>Done as of v0.1.0</summary>
+
 ### ~~Get rid of `is.js` dependency.~~
 
 ### ~~Future Checks:~~
@@ -358,21 +378,4 @@ Collection Checks
 - [x] Variadic
 - [x] ArrayOf
 - [x] Tuple: Understanding tuple as `[TypeCheck1, TypeCheck2, ...]`
-
-### Type Constraints? 
-
-(This one looks tricky, might not be a good idea)
-
-```javascript
-Constrained(TypeCheck, Constraint1, Constraint2)
-// Or...
-TypeCheck.where(Constraint1, Constraint2);
-````
-
-- [ ] Min
-- [ ] Max
-- [ ] Range
-- [ ] MinLength
-- [ ] MaxLength
-- [ ] RangeLength
-- [ ] (value) => boolean
+</details>
