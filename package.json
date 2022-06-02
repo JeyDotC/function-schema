@@ -1,6 +1,6 @@
 {
   "name": "function-schema",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Define your function signature so it is type-checked!",
   "main": "./src/index.js",
   "typings": "./function-schema.d.ts",
