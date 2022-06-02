@@ -44,6 +44,10 @@ export declare function Matches(expression: RegExp): TypeCheck;
 
 export declare function Variadic(spec: TypeCheckSpec): TypeCheck;
 
+export declare function ArrayOf(spec: TypeCheckSpec): TypeCheck;
+
+export declare function Tuple(...spec: TypeCheckSpec[]): TypeCheck;
+
 export { TypeCheck, TypeCheckError, ValidationParam, ValidationResult, ValueKind } from './src/typeCheck';
 
 export { Any, Int, Void, Truthy, Falsy } from "./src/typeChecks";
