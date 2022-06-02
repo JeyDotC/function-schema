@@ -1,5 +1,5 @@
 const { signature } = require("../src/signature");
-const { Optional, PromiseOf, OneOf } = require("../src/typeChecks");
+const { Optional, PromiseOf, OneOf, Variadic } = require("../src/typeChecks");
 
 describe('signature', () => {
   it.each([
@@ -9,6 +9,10 @@ describe('signature', () => {
     { params: [], returnType: String, expectedSignature: '(): string' },
     { params: [String], returnType: String, expectedSignature: '(string): string' },
     { params: [String, Number], returnType: String, expectedSignature: '(string, number): string' },
+    { params: [Variadic(String)], returnType: String, expectedSignature: '(...string[]): string' },
+    { params: [String, Variadic(String)], returnType: String, expectedSignature: '(string, ...string[]): string' },
+    // Using Variadic as an ad-hoc ArrayOf, possible, but NOT RECOMMENDED for the sake of clarity
+    { params: [String, Variadic(String), Number], returnType: String, expectedSignature: '(string, ...string[], number): string' },
   ])('Should create a signature spec when provided params and return specs', ({ params, returnType, expectedSignature }) => {
     // Act
     const resultSignature = signature(...params)(returnType);
@@ -46,6 +50,18 @@ describe('signature', () => {
     { params: [], returnType: String, badParameters: [], badReturn: 500, expectedFailure: "Return value must be an instance of string, received number" },
 
     { params: [String], returnType: String, badParameters: ["Valid"], badReturn: 500, expectedFailure: "Return value must be an instance of string, received number" },
+    // Variadic
+    { params: [Variadic(String)], returnType: undefined, badParameters: [500], badReturn: undefined, expectedFailure: 'Parameter 0 must be an instance of ...string[], received number@0' },
+
+    { params: [Variadic(String)], returnType: undefined, badParameters: ["Valid", 500], badReturn: undefined, expectedFailure: 'Parameter 0 must be an instance of ...string[], received number@1' },
+
+    { params: [Variadic(String)], returnType: undefined, badParameters: ["Valid", 500, "Valid 2", 300, "Valid 3"], badReturn: undefined, expectedFailure: 'Parameter 0 must be an instance of ...string[], received number@1, number@3' },
+
+    { params: [String, Variadic(String)], returnType: undefined, badParameters: ["Non-Variadic-Valid", 500], badReturn: undefined, expectedFailure: 'Parameter 1 must be an instance of ...string[], received number@1' },
+
+    { params: [String, Variadic(String)], returnType: undefined, badParameters: ["Non-Variadic-Valid", "Valid", 500], badReturn: undefined, expectedFailure: 'Parameter 1 must be an instance of ...string[], received number@2' },
+
+    { params: [String, Variadic(String)], returnType: undefined, badParameters: ["Non-Variadic-Valid", "Valid", 500, "Valid 2", 300, "Valid 3"], badReturn: undefined, expectedFailure: 'Parameter 1 must be an instance of ...string[], received number@2, number@4' },
 
   ])('Should perform checks when checked implementation is invoked', ({ params, returnType, badParameters, badReturn, expectedFailure }) => {
     // Arrange
@@ -67,6 +83,16 @@ describe('signature', () => {
     { params: [], returnType: String, invokeParameters: [], invokeReturn: "Valid Return" },
 
     { params: [String], returnType: String, invokeParameters: ["Valid"], invokeReturn: "Valid Return" },
+
+    { params: [Variadic(String)], returnType: undefined, invokeParameters: [], invokeReturn: undefined },
+    { params: [Variadic(String)], returnType: undefined, invokeParameters: ["Valid"], invokeReturn: undefined },
+    { params: [Variadic(String)], returnType: undefined, invokeParameters: ["Valid", "Valid2"], invokeReturn: undefined },
+    { params: [Variadic(String)], returnType: undefined, invokeParameters: ["Valid", "Valid2", "Valid3"], invokeReturn: undefined },
+
+    { params: [Number, Variadic(String)], returnType: undefined, invokeParameters: [100], invokeReturn: undefined },
+    { params: [Number, Variadic(String)], returnType: undefined, invokeParameters: [100, "Valid"], invokeReturn: undefined },
+    { params: [Number, Variadic(String)], returnType: undefined, invokeParameters: [100, "Valid", "Valid2"], invokeReturn: undefined },
+    { params: [Number, Variadic(String)], returnType: undefined, invokeParameters: [100, "Valid", "Valid2", "Valid3"], invokeReturn: undefined },
 
   ])('Should Succeed when parameters and return types are correct', ({ params, returnType, invokeParameters, invokeReturn }) => {
     // Arrange
@@ -124,11 +150,11 @@ describe('signature.meta', () => {
 
 describe('checkedImplementation.meta', () => {
   it.each([
-    { paramChecks: [String], returnCheck: String, implementation: () => {}, expectedName: 'implementation' },
-    { paramChecks: [String, Number], returnCheck: String,  implementation: () => {}, expectedName: 'implementation' },
+    { paramChecks: [String], returnCheck: String, implementation: () => { }, expectedName: 'implementation' },
+    { paramChecks: [String, Number], returnCheck: String, implementation: () => { }, expectedName: 'implementation' },
 
-    { paramChecks: [String], returnCheck: String, implementation: function Foo() {}, expectedName: 'Foo' },
-    { paramChecks: [String, Number], returnCheck: String,  implementation: function Foo() {}, expectedName: 'Foo' },
+    { paramChecks: [String], returnCheck: String, implementation: function Foo() { }, expectedName: 'Foo' },
+    { paramChecks: [String, Number], returnCheck: String, implementation: function Foo() { }, expectedName: 'Foo' },
   ])('Should contain a metadata object', ({ paramChecks, returnCheck, implementation, expectedName }) => {
     // Act
     const FuncType = signature(...paramChecks)(returnCheck);
@@ -143,7 +169,7 @@ describe('checkedImplementation.meta', () => {
 
   it('Should produce function with empty name whe given anonymous function', () => {
     // Arrange
-    const Func = signature()()(() => {});
+    const Func = signature()()(() => { });
 
     // Act
     const name = Func.meta.name;
@@ -158,7 +184,7 @@ describe('checkedImplementation.meta', () => {
   ])('Properties should be read only', (property) => {
     'use strict';
     // Arrange
-    const Func = signature(String, Number)()(() => {});
+    const Func = signature(String, Number)()(() => { });
 
     // Act
     const act = () => Func.meta[property] = "";

@@ -134,10 +134,12 @@ function Variadic(spec) {
       });
     }
 
+    const baseIndex = index || 0;
+
     const invalidValues = value.reduce((accumulate, current, variadicIndex) => {
       const { isValid, receivedTypeName } = variadicValidation.isValid({ value: current });
       if (!isValid) {
-        return [...accumulate, `${receivedTypeName}@${(index || 0) + variadicIndex}`]
+        return [...accumulate, `${receivedTypeName}@${baseIndex + variadicIndex}`]
       }
       return accumulate;
     }, []);

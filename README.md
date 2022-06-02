@@ -186,6 +186,45 @@ const myAsyncFunction = signature()(PromiseOf(String))(
 );
 ```
 
+Variadic
+
+```javascript
+import { signature, Any } from 'function-schema';
+
+// myFunction(name: any): void
+const myFunction = signature(Any)()(
+  (something) => console.log(something),
+)
+
+// myFunction Accepts anything!
+
+myFunction(); // undefined
+myFunction(null); // null
+myFunction(500); // 500
+myFunction('Steve'); // 'Steve'
+myFunction({ x: 0, y: 0 }); // { x: 0, y: 0 }
+```
+
+One Of
+
+```javascript
+import { signature, Variadic } from 'function-schema';
+
+const myFunction = signature(Number, Variadic(String))()(
+  (numericValue, ...variadicValues) => console.log(numericValue, variadicValues);
+);
+
+myFunction(600); // 600, []
+myFunction(600, 'String1'); // 600, ['String1']
+myFunction(600, 'String1', 'String2'); // 600, ['String1', 'String2']
+
+myFunction(600, null); // TypeCheckError: Parameter 1 must be an instance of ...string[], received null@1 instead
+myFunction(600, 'String1', undefined); // TypeCheckError: Parameter 1 must be an instance of ...string[], received undefined@2 instead
+myFunction(600, 'String1', 100, 'String2', 300); // TypeCheckError: Parameter 1 must be an instance of ...string[], received number@2, number@4 instead
+```
+
+> **Warning** For the sake of clarity, only use Variadic as _last parameter_, it can technically be used in the middle, but that'd be confusing and, at certain circumstances, cause unpredictable behaviors.
+
 Use signatures as function factories
 
 ```javascript
@@ -265,7 +304,7 @@ String Checks
 
 Collection Checks
 
-- [ ] Variadic (?)
+- [*] Variadic
 - [ ] ArrayOf (?)
 - [ ] Tuple: Understanding tuple as `[TypeCheck1, TypeCheck2, ...]`
 
