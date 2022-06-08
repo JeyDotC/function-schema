@@ -101,22 +101,21 @@ function Struct(objectSpec) {
       if (value === null || value === undefined) {
         return false;
       }
-      const validationResults = entries.map(
-        ([prop, typeCheck]) => {
-          try {
-            typeCheck.perform({
-              value: value[prop],
-              index,
-              kind
-            });
-          } catch (e) {
-            return `${prop}: ${e.message}`;
-          }
-          return undefined;
-        }).filter(e => e !== undefined);
+
+      const validationResults = entries.reduce((accumulate, [prop, typeCheck]) => {
+        const { isValid, receivedTypeName } = typeCheck.isValid({
+          value: value[prop],
+          index,
+          kind
+        });
+        if(!isValid){
+          return [...accumulate, `${prop}: Expected: ${typeCheck.name}, Received: ${receivedTypeName}`];
+        }
+        return accumulate;
+      }, []);
 
       const isValid = validationResults.length === 0;
-      const receivedTypeName = `object with these errors: \n - ${validationResults.join(',\n - ')}\n`;
+      const receivedTypeName = isValid ? undefined : `object with these errors: \n - ${validationResults.join(',\n - ')}\n`;
 
       return { isValid, receivedTypeName };
     }

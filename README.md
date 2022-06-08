@@ -44,7 +44,7 @@ const myFunction = signature(String)(String)(
 )
 ```
 
-Optional parameters
+### Optional parameters/return value
 
 ```javascript
 import { signature, Optional, Int } from 'function-schema';
@@ -62,7 +62,7 @@ myFunction('Zima', undefined); // "I'm Zima, and I'm infinite years old"
 myFunction('Josh', 'Foo'); // TypeCheckError: Parameter 1 must be an instance of Optional<int>, received string instead
 ```
 
-Instance Of
+### Instance Of
 
 ```javascript
 import { signature, InstanceOf } from 'function-schema';
@@ -78,7 +78,7 @@ const myFunction = signature(InstanceOf(MyClass))()(
   (param) => console.log(param),
 );
 
-// This would have the exact same effect since InstanceOf is the default type check.
+// This would have the exact same effect since InstanceOf is the fallback type check.
 const myFunction = signature(MyClass)()(
   (param) => console.log(param),
 );
@@ -89,7 +89,7 @@ myFunction(); // TypeCheckError: Parameter 0 must be an instance of MyClass, rec
 myFunction({ name: 'John' }); // TypeCheckError: Parameter 0 must be an instance of MyClass, received object instead
 ```
 
-Any
+### Any
 
 ```javascript
 import { signature, Any } from 'function-schema';
@@ -108,7 +108,7 @@ myFunction('Steve'); // 'Steve'
 myFunction({ x: 0, y: 0 }); // { x: 0, y: 0 }
 ```
 
-One Of
+### One Of
 
 ```javascript
 import { signature, OneOf } from 'function-schema';
@@ -127,7 +127,7 @@ myFunction({});  // TypeCheckError: Parameter 0 must be an instance of OneOf<str
 myFunction(() => 'Boom!');  // TypeCheckError: Parameter 0 must be an instance of OneOf<string, number>, received function instead
 ```
 
-Struct
+### Struct
 
 ```javascript
 import { signature, Struct } from 'function-schema';
@@ -167,7 +167,7 @@ myFunction({ });
 //  instead
 ```
 
-Promise Of
+### Promise Of
 
 ```javascript
 import { signature, PromiseOf } from 'function-schema';
@@ -186,26 +186,7 @@ const myAsyncFunction = signature()(PromiseOf(String))(
 );
 ```
 
-Any
-
-```javascript
-import { signature, Any } from 'function-schema';
-
-// myFunction(name: any): void
-const myFunction = signature(Any)()(
-  (something) => console.log(something),
-)
-
-// myFunction Accepts anything!
-
-myFunction(); // undefined
-myFunction(null); // null
-myFunction(500); // 500
-myFunction('Steve'); // 'Steve'
-myFunction({ x: 0, y: 0 }); // { x: 0, y: 0 }
-```
-
-Variadic
+### Variadic
 
 ```javascript
 import { signature, Variadic } from 'function-schema';
@@ -225,7 +206,7 @@ myFunction(600, 'String1', 100, 'String2', 300); // TypeCheckError: Parameter 1 
 
 > **Warning** For the sake of clarity, only use Variadic as _last parameter_, it can technically be used in the middle, but that'd be confusing and, at certain circumstances, cause unpredictable behaviors.
 
-ArrayOf
+### ArrayOf
 
 ```javascript
 import { signature, ArrayOf } from 'function-schema';
@@ -245,7 +226,7 @@ myFunction(['String1', 100, 'String2', 300]); // TypeCheckError: Parameter 0 mus
 
 > **Note:** Since arrays could potentially be big, this check will stop at the first invalid entry, all subsequent elements will be ignored.
 
-Tuple
+### Tuple
 
 ```javascript
 import { signature, Tuple } from 'function-schema';
@@ -254,7 +235,7 @@ const myFunction = signature(Tuple(String, Number))()(
   (tuple) => console.log(tuple);
 );
 
-myFunction(['String1', 100]); // ['String1', 'String2']
+myFunction(['String1', 100]); // ['String1', 100]
 myFunction(['String1', 100, 'Ignored Value']); // ['String1', 100, 'Ignored Value']
 
 myFunction(null); // TypeCheckError: Parameter 0 must be an instance of (string, number), received null instead
@@ -262,7 +243,7 @@ myFunction(['String1', undefined]); // TypeCheckError: Parameter 0 must be an in
 myFunction(['String1', 'String2', 300]); // TypeCheckError: Parameter 0 must be an instance of (string, number), received (string, string) instead
 ```
 
-Use signatures as function factories
+### Use signatures as function factories
 
 ```javascript
 import { signature } from 'function-schema';
@@ -273,7 +254,7 @@ const listUsers = RequestHandler((request) => new MyResponseClass());
 const createUser = RequestHandler((request) => new MyResponseClass());
 ```
 
-Define custom type checks
+### Define custom type checks
 
 ```javascript
 // A simple type check
@@ -285,7 +266,7 @@ const NumberRange = (lowerRange, upperRange) => new TypeCheck(`number(from ${low
 });
 ```
 
-Generics (sort of)
+### Generics (sort of)
 
 ```javascript
 const MapDelegate = (T, R) => signature(T)(R);
@@ -295,6 +276,18 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 [1, 2, 3, 4].map(numbersToString); // ['1', '2', '3', '4'];
 
 [1, '!', 3, 4].map(numbersToString); // TypeCheckError: Parameter 0 must be an instance of number, received string instead.
+
+// You can also define a "generic struct"
+
+const MyGenericStruct = (T) => Struct({
+  someProperty: String,
+  someGenericProperty: T
+});
+
+const MyNumberStruct = MyGenericStruct(Number);
+const MyStringStruct = MyGenericStruct(String);
+const MyArrayOfStringsStruct = MyGenericStruct(ArrayOf(String));
+// etc.
 ```
 
 ## All type checks so far
@@ -337,14 +330,42 @@ const numbersToString = MapDelegate(Number, String)((n) => n.toString());
 
 ## TODO
 
+### DateString
+
+```javascript
+// Concept
+DateString(format = 'yyyy-MM-dd')
+
+// Usage
+const myFunction = signature(DateString, DateString('dd-MM-yyyy HH:mm:ss'))()((date1, date2) => {
+  console.log(date1, date2);
+});
+
+// Multiple formats could be supported through OneOf
+const myFunction = signature(OneOf(DateString, DateString('dd-MM-yyyy HH:mm:ss')))()((date) => {
+  console.log(date);
+});
+```
+
 ### Type Constraints? 
 
 (This one looks tricky, might not be a good idea)
 
 ```javascript
 Constrained(TypeCheck, Constraint1, Constraint2)
+
 // Or...
 TypeCheck.where(Constraint1, Constraint2);
+
+// Or...
+TypeCheck.with(Constraint1, Constraint2);
+
+// Or...
+Constraint1(TypeCheck, ...constraintParam);
+
+// Or... Forget about the concept and create new type checks e.g.
+NumberAbove(minValue), NumberBelow(maxValue), NumberRanging(min, max) // And their Int counterparts
+MinLength(String, minLength), MaxLength(String, maxLength), RangeLength(String, minLength, maxLength) // Applicable to anything with length
 ````
 
 - [ ] Min
