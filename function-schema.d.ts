@@ -1,6 +1,20 @@
-import { TypeCheck } from "./src/typeCheck";
 
-export declare type TypeCheckSpec = TypeCheck | Function | string | number | boolean | null | undefined;
+export type TypeCheckImplementation = (value: any) => boolean | ValidationResult;
+
+export type ValidationResult = {
+  isValid: boolean,
+  receivedTypeName?: string,
+}
+export declare class TypeCheck<TargetType = any> {
+
+  constructor(name: string, implementation: TypeCheckImplementation);
+
+  isValid(value: any): ValidationResult;
+
+  perform(value: any): void;
+}
+
+export declare type TypeCheckSpec<T> = TypeCheck<T> | Function | string | number | boolean | null | undefined;
 
 export declare type TypeChecksMeta = {
   paramChecks: TypeCheck[],
@@ -32,24 +46,34 @@ export declare function signature(...params: TypeCheckSpec[]): SetReturnTypeChec
 
 export declare function typeCheckFactory(spec: TypeCheckSpec): TypeCheck;
 
+// Typechecks
+
 export declare function OneOf(...typeSpecs: TypeCheckSpec[]): TypeCheck;
 
-export declare function Optional(spec: TypeCheckSpec): TypeCheck;
+export declare function Optional<T>(spec: TypeCheckSpec<T>): TypeCheck<T>;
 
-export declare function Struct(spec: Record<string, TypeCheckSpec>): TypeCheck;
+export declare function Struct(spec: Record<string, TypeCheckSpec>): TypeCheck<Record<string, any>>;
 
-export declare function PromiseOf(spec: TypeCheckSpec): TypeCheck;
+export declare function PromiseOf<T>(spec: TypeCheckSpec<T>): TypeCheck<Promise<T>>;
 
-export declare function Matches(expression: RegExp): TypeCheck;
+export declare function Matches(expression: RegExp): TypeCheck<string>;
 
-export declare function Variadic(spec: TypeCheckSpec): TypeCheck;
+export declare function Variadic<T>(spec: TypeCheckSpec<T>): TypeCheck<T[]>;
 
-export declare function ArrayOf(spec: TypeCheckSpec): TypeCheck;
+export declare function ArrayOf<T>(spec: TypeCheckSpec<T>): TypeCheck<T[]>;
 
 export declare function Tuple(...spec: TypeCheckSpec[]): TypeCheck;
 
-export { TypeCheck, TypeCheckError, ValidationParam, ValidationResult, ValueKind } from './src/typeCheck';
+export { TypeCheckError, ValidationParam, ValidationResult, ValueKind } from './src/typeCheck';
 
-export { Any, Int, Void, Truthy, Falsy } from "./src/typeChecks";
+export declare const Any: TypeCheck<any>;
+export declare const Int: TypeCheck<number>;
+export declare const Void: TypeCheck<any>;
+export declare const Truthy: TypeCheck<any>;
+export declare const Falsy: TypeCheck<false|0|-0|0n|''|null|undefined>;
 
-export { Email, Url, BooleanString, IntString, NumericString } from "./src/stringTypeChecks";
+export declare const Email: TypeCheck<string>;
+export declare const Url: TypeCheck<string>;
+export declare const BooleanString: TypeCheck<string>;
+export declare const IntString: TypeCheck<string>;
+export declare const NumericString: TypeCheck<string>;
